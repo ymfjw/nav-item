@@ -2,18 +2,17 @@ FROM node:20-alpine3.20 AS frontend-builder
 
 WORKDIR /app
 
-# 添加一个可变的构建参数，用于强制破坏 Docker 缓存
 ARG CACHEBUST=1
 
 COPY web/package*.json ./
 
-# 安装依赖时禁用缓存，并清理 npm 缓存
+# 安装依赖时禁用 npm 缓存即可
 RUN npm install --no-cache && npm cache clean --force
 
 COPY web/ ./
 
-# 构建时也禁用缓存
-RUN npm run build -- --no-cache
+# 去掉 -- --no-cache 参数，只运行标准构建命令
+RUN npm run build
 
 # 生产环境
 FROM node:20-alpine3.20 AS production
